@@ -1,10 +1,11 @@
 # My LAMP VM
 
-This is just a Vagrant box with the stack I regularly use at work and for personnal projects. Based on ubuntu/trusty, nothing fancy, provisioned with a good ol' bash file, noob friendly. 
+This is just a Vagrant box with the stack I use on a regular basis. Based on debian/jessie, nothing fancy, provisioned with a good ol' bash file, noob friendly. 
 
 ```
 git clone https://github.com/vince-db/myLampVM.git
 cd myLampVM
+vagrant plugin install vagrant-vbguest
 vagrant up
 ```
 
