@@ -28,7 +28,7 @@ apt-get -q -y install mysql-server mysql-client php5-mysql
 #
 # Utilities
 #
-apt-get install -y curl htop git vim tree make autoconf npm
+apt-get install -y curl htop git vim tree make autoconf npm upstart
 
 #
 # Composer for PHP
@@ -42,6 +42,8 @@ mv composer.phar /usr/local/bin/composer
 sudo apt-get install -y rubygems ruby-dev
 apt-get install libsqlite3-dev
 gem install mailcatcher
+cp /vagrant/config/mailcatcher.conf /etc/init/
+service mailcatcher start
 
 #
 # Apache VHost
