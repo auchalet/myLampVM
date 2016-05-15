@@ -40,7 +40,8 @@ mv composer.phar /usr/local/bin/composer
 # Ruby gems
 #
 sudo apt-get install -y rubygems ruby-dev
-# @todo gem install mailcatcher
+apt-get install libsqlite3-dev
+gem install mailcatcher
 
 #
 # Apache VHost
