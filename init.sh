@@ -1,5 +1,6 @@
 #!/bin/bash
 # Using Debian Jessie
+# Remove "> /dev/null" to debug
 
 apt-get update > /dev/null
 
@@ -16,24 +17,24 @@ sed -i -e '$a\ServerName localhost' /etc/apache2/apache2.conf
 #
 # More PHP
 # 
-apt-get install -y php5-mcrypt php5-curl php5-intl php5-xdebug php5-xsl mcrypt
+apt-get install -y php5-mcrypt php5-curl php5-intl php5-xdebug php5-xsl mcrypt > /dev/null
 
 #
 # MySQL with root:pass
 #
 debconf-set-selections <<< 'mysql-server mysql-server/root_password password pass'
 debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password pass'
-apt-get -q -y install mysql-server mysql-client php5-mysql 
+apt-get -q -y install mysql-server mysql-client php5-mysql > /dev/null
 
 #
 # Utilities
 #
-apt-get install -y curl htop git vim tree make autoconf npm upstart
+apt-get install -y curl htop git vim tree make autoconf npm upstart > /dev/null
 
 #
 # Composer for PHP
 #
-wget https://getcomposer.org/composer.phar
+wget https://getcomposer.org/composer.phar > /dev/null
 mv composer.phar /usr/local/bin/composer 
 
 #
@@ -42,44 +43,29 @@ mv composer.phar /usr/local/bin/composer
 sudo apt-get install -y rubygems ruby-dev
 apt-get install libsqlite3-dev
 gem install mailcatcher
-cp /vagrant/config/mailcatcher.conf /etc/init/
-service mailcatcher start
+
+#
+# Copy config files where they belong
+#
+cp -rf /vagrant/config/mailcatcher.conf /etc/init/
+cp -rf /vagrant/config/vagrant.conf /etc/apache2/sites-available
+cp -rf /vagrant/config/mailcatcher.ini /etc/php5/mods-available
+cp -rf /vagrant/config/php.ini /etc/php5/apache2/php.ini
 
 #
 # Apache VHost
 #
 mkdir -p /var/www/application/
-cd ~
-echo '<VirtualHost *:80>
-        DocumentRoot /var/www/application/
-        ErrorLog  /var/www/projects-error.log
-        CustomLog /var/www/projects-access.log combined
-</VirtualHost>
-
-<Directory "/var/www">
-        Options Indexes Followsymlinks
-        AllowOverride All
-        Require all granted
-</Directory>' > vagrant.conf
-
-mv vagrant.conf /etc/apache2/sites-available
 a2enmod rewrite > /dev/null
 
 #
-# Update PHP Error Reporting
-#
-sed -i 's/short_open_tag = Off/short_open_tag = On/' /etc/php5/apache2/php.ini
-sed -i 's/error_reporting = E_ALL & ~E_DEPRECATED & ~E_STRICT/error_reporting = E_ALL/' /etc/php5/apache2/php.ini
-sed -i 's/display_errors = Off/display_errors = On/' /etc/php5/apache2/php.ini
-#  Append session save location to /tmp to prevent errors in an odd situation..
-sed -i '/\[Session\]/a session.save_path = "/tmp"' /etc/php5/apache2/php.ini
-
-#
-# Reload apache
+# Reload apache and other services
 #
 a2ensite vagrant
 a2dissite 000-default
+php5enmod mailcatcher
 service apache2 restart
+service mailcatcher restart
 
 #
 #  Cleanup
