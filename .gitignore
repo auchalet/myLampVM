@@ -1,3 +1,4 @@
 .vagrant/
 projects-access.log
 projects-error.log
+./
